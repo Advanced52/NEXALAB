@@ -37,11 +37,11 @@
               [attr.aria-hidden]="i === activeSlide() ? null : 'true'"
               [attr.tabindex]="i === activeSlide() ? 0 : -1"
             >
-              <img
-                [src]="slideImage(item)"
-                [alt]="item.name"
-                [style.object-position]="'top center'"
-              />
+              <div class="hero__slide-media">
+                <!-- Fondo desenfocado: rellena el marco si la imagen no es 16:9 -->
+                <img class="hero__slide-bg" [src]="slideImage(item)" alt="" aria-hidden="true" />
+                <img class="hero__slide-img" [src]="slideImage(item)" [alt]="item.name" />
+              </div>
               <div
                 class="hero__slide-caption"
                 [style.--accent]="item.primaryColor || 'var(--nx-cyan)'"
