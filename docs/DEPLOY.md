@@ -1,101 +1,72 @@
-# Despliegue en servidor casero (Portainer + GitHub)
+# Auto-update con GitHub Actions (como tu otra página)
 
-Así se actualiza la web sola cada vez que haces push desde VS Code / Cursor.
+## Cómo funciona
 
-## Flujo
+No necesitas un runner en tu casa. GitHub usa sus runners gratis:
 
 ```
-VS Code → git push → GitHub → GitHub Actions → webhook Portainer → rebuild stack
+Cursor/VS Code → git push → GitHub Actions (runner) → POST webhook → Portainer actualiza
 ```
 
-## 1. Subir el código a GitHub
+El archivo `.github/workflows/deploy.yml` ya está en el repo.
 
-Si el repo aún no tiene remoto:
+## Activarlo (solo una vez)
 
-1. Crea un repositorio en GitHub (privado o público).
-2. En tu PC:
+### 1. Webhook en Portainer
 
-```bash
+1. **Stacks** → clic en **nexalab**
+2. Busca **Webhooks** (a veces en el menú del stack o en Git configuration)
+3. Activa / crea el webhook de **Pull and redeploy** / **GitOps update**
+4. **Copia la URL** completa (algo como `https://tu-portainer.../api/stacks/webhooks/xxxx`)
+
+Importante: esa URL debe ser alcanzable desde internet (tu dominio Cloudflare de Portainer), no `localhost`.
+
+Si al crear el webhook hay opción **Re-pull image**, déjala **desactivada**  
+(nosotros construimos las imágenes en el servidor; el pull a Docker Hub falla).
+
+### 2. Secret en GitHub
+
+1. Abre https://github.com/Advanced52/NEXALAB/settings/secrets/actions
+2. **New repository secret**
+3. Name: `PORTAINER_WEBHOOK_URL`
+4. Value: pega la URL del webhook
+5. Save
+
+### 3. Probar
+
+En tu PC:
+
+```powershell
 cd C:\Users\Mauro\Desktop\NEXALAB
-git remote add origin https://github.com/TU_USUARIO/NEXALAB.git
 git add .
-git commit -m "Prepare production deploy"
-git branch -M main
-git push -u origin main
-```
-
-## 2. Crear el stack en Portainer
-
-1. Abre Portainer → **Stacks** → **Add stack**.
-2. Nombre: `nexalab`.
-3. Método: **Repository**.
-4. Repository URL: `https://github.com/TU_USUARIO/NEXALAB.git`
-5. Compose path: `docker-compose.prod.yml`
-6. Branch: `main`
-7. En **Environment variables** agrega (mínimo):
-
-| Variable | Ejemplo |
-|----------|---------|
-| `DB_USERNAME` | `nexalab` |
-| `DB_PASSWORD` | *(clave fuerte)* |
-| `DB_DATABASE` | `bd_nexalab` |
-| `JWT_SECRET` | *(mín. 32 caracteres)* |
-| `ADMIN_EMAIL` | `admin@tudominio.com` |
-| `ADMIN_PASSWORD` | *(clave fuerte)* |
-| `APP_URL` | `http://IP_DEL_SERVIDOR:8088` |
-| `FRONTEND_URL` | `http://IP_DEL_SERVIDOR:8088` |
-| `NEXALAB_HTTP_PORT` | `8088` |
-
-8. Deploy the stack.
-
-La web queda en: `http://IP_DEL_SERVIDOR:8088`
-
-> Si ya tienes PostgreSQL en el servidor, puedes quitar el servicio `postgres` del compose y poner `DB_HOST` con el nombre/IP de ese contenedor (en la misma red Docker).
-
-## 3. Activar auto-update (como tu otra página)
-
-### En Portainer
-
-1. Entra al stack `nexalab`.
-2. Abre **Webhooks** (o "Pull and redeploy webhook").
-3. Copia la URL del webhook.
-
-### En GitHub
-
-1. Repo → **Settings** → **Secrets and variables** → **Actions**.
-2. New secret:
-   - Name: `PORTAINER_WEBHOOK_URL`
-   - Value: la URL que copiaste
-
-El workflow `.github/workflows/deploy.yml` ya llama a ese webhook en cada push a `main`.
-
-## 4. Día a día
-
-```bash
-git add .
-git commit -m "tu cambio"
+git commit -m "Prueba auto-deploy"
 git push
 ```
 
-En 1–3 minutos Portainer baja el código, reconstruye imágenes y reinicia contenedores.
+Luego:
+1. GitHub → pestaña **Actions** → debe verse el workflow **Deploy NEXALAB** en verde
+2. En Portainer el stack se actualiza solo (1–5 min)
 
-## 5. pgAdmin
+## Día a día
 
-No hace falta otro pgAdmin: usa el que ya tienes.
+```powershell
+cd C:\Users\Mauro\Desktop\NEXALAB
+git add .
+git commit -m "descripcion del cambio"
+git push
+```
 
-Datos de conexión al Postgres del stack:
+Listo: se actualiza la web sola.
 
-- Host: `nexalab-postgres` (si pgAdmin está en la misma red Docker `nexalab`)  
-  o la IP del servidor + puerto publicado si lo expones
-- Puerto: `5432`
-- DB / user / pass: los de las variables del stack
+## Si Actions falla
 
-## 6. Dominio / HTTPS (opcional)
+| Error | Qué hacer |
+|--------|-----------|
+| Falta `PORTAINER_WEBHOOK_URL` | Crear el secret (paso 2) |
+| HTTP 404 / timeout | La URL del webhook debe ser la pública de Cloudflare, no LAN |
+| Pull access denied | En el webhook/stack, desactivar “Re-pull image” |
 
-Pon Nginx Proxy Manager, Traefik o Caddy delante del puerto `8088` y apunta tu dominio. Luego actualiza `APP_URL` y `FRONTEND_URL` a `https://tudominio.com`.
+## ¿Runner self-hosted?
 
-## Notas
-
-- Las imágenes subidas viven en el volumen `nexalab_uploads` (no se pierden al redesplegar).
-- En producción, cuando el esquema esté estable, cambia `DB_SYNC=false` y usa migraciones.
-- El frontend de producción usa nginx (no `ng serve`).
+Tu otra página podía usar runners de GitHub (en la nube) **o** un runner instalado en el CPU.  
+Para NEXALAB con Portainer + webhook, **no hace falta** instalar runner en casa: el de GitHub (`ubuntu-latest`) basta.

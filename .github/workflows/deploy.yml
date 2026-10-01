@@ -1,7 +1,9 @@
-# Auto-despliegue: push a main → avisa a Portainer para reconstruir el stack
+# Auto-deploy: push a main → GitHub Actions → webhook Portainer
 #
-# 1. En Portainer: Stack → Webhooks → copia la URL
-# 2. En GitHub: Settings → Secrets → Actions → PORTAINER_WEBHOOK_URL
+# Setup:
+# 1. Portainer → Stacks → nexalab → Webhooks → copia URL
+# 2. GitHub → Settings → Secrets and variables → Actions
+#    → New secret: PORTAINER_WEBHOOK_URL = esa URL
 
 name: Deploy NEXALAB
 
@@ -14,13 +16,27 @@ jobs:
   notify-portainer:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Portainer stack webhook
+      - name: Trigger Portainer webhook
         env:
           WEBHOOK_URL: ${{ secrets.PORTAINER_WEBHOOK_URL }}
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
-            echo "Falta el secret PORTAINER_WEBHOOK_URL. Configúralo en GitHub → Settings → Secrets."
+            echo "::error::Falta el secret PORTAINER_WEBHOOK_URL"
+            echo "GitHub → Settings → Secrets → Actions → New repository secret"
+            echo "Name: PORTAINER_WEBHOOK_URL"
+            echo "Value: la URL del webhook del stack nexalab en Portainer"
             exit 1
           fi
-          curl -fsS -X POST "$WEBHOOK_URL"
-          echo "Portainer notificado: reconstruirá el stack."
+
+          echo "Avisando a Portainer..."
+          HTTP_CODE=$(curl -sS -o /tmp/portainer_response.txt -w "%{http_code}" -X POST "$WEBHOOK_URL")
+          echo "HTTP $HTTP_CODE"
+          cat /tmp/portainer_response.txt || true
+          echo
+
+          if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
+            echo "::error::Portainer respondió $HTTP_CODE"
+            exit 1
+          fi
+
+          echo "OK — Portainer actualizará el stack (git pull + rebuild)."
