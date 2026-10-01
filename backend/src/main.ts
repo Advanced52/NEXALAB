@@ -25,8 +25,14 @@ async function bootstrap() {
   const apiPrefix = config.get<string>('app.apiPrefix', 'api/v1');
   app.setGlobalPrefix(apiPrefix);
 
+  const frontendUrl = config.get<string>('app.frontendUrl', 'http://localhost:4200');
+  const allowedOrigins = frontendUrl
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: config.get<string>('app.frontendUrl', 'http://localhost:4200'),
+    origin: allowedOrigins.includes('*') ? true : allowedOrigins,
     credentials: true,
   });
 
