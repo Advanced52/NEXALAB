@@ -1,29 +1,10 @@
-# Stack de producción para Portainer / servidor casero
-# Uso: Portainer → Stacks → Repository → docker-compose.prod.yml
+# Stack de producción para Portainer (usa Postgres que ya tienes)
+# Compose path: docker-compose.prod.yml
+#
+# Importante: une este stack a la misma red Docker donde corre tu Postgres.
+# En Portainer: Stack → Editor → al final, o en Advanced → Networks.
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: nexalab-postgres
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${DB_USERNAME:-nexalab}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
-      POSTGRES_DB: ${DB_DATABASE:-bd_nexalab}
-    volumes:
-      - nexalab_postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          'pg_isready -U ${DB_USERNAME:-nexalab} -d ${DB_DATABASE:-bd_nexalab}',
-        ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-    networks:
-      - nexalab
-
   backend:
     build:
       context: ./backend
@@ -37,9 +18,9 @@ services:
       APP_URL: ${APP_URL:-http://localhost}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
       API_PREFIX: api/v1
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USERNAME: ${DB_USERNAME:-nexalab}
+      DB_HOST: ${DB_HOST:?set DB_HOST}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_USERNAME: ${DB_USERNAME:?set DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
       DB_DATABASE: ${DB_DATABASE:-bd_nexalab}
       DB_SYNC: ${DB_SYNC:-true}
@@ -53,11 +34,9 @@ services:
       MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-5}
     volumes:
       - nexalab_uploads:/app/uploads
-    depends_on:
-      postgres:
-        condition: service_healthy
     networks:
       - nexalab
+      - shared
 
   frontend:
     build:
@@ -74,9 +53,13 @@ services:
       - nexalab
 
 volumes:
-  nexalab_postgres_data:
   nexalab_uploads:
 
 networks:
   nexalab:
     name: nexalab
+  # Red Docker donde ya corre tu Postgres (obligatoria).
+  # Ejemplo: si el otro stack usa la red "proxy", pon DOCKER_SHARED_NETWORK=proxy
+  shared:
+    external: true
+    name: ${DOCKER_SHARED_NETWORK:?set DOCKER_SHARED_NETWORK}
