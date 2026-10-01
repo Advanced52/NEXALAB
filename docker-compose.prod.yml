@@ -8,7 +8,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    image: nexalab-backend:latest
+    image: nexalab-backend:v2
     container_name: nexalab-backend
     restart: unless-stopped
     environment:
@@ -41,7 +41,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    image: nexalab-frontend:latest
+    image: nexalab-frontend:v2
     container_name: nexalab-frontend
     restart: unless-stopped
     ports:
