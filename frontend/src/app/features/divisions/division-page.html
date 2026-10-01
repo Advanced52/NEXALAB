@@ -61,7 +61,7 @@
             <div>
               <h3>{{ product.name }}</h3>
               <p>{{ product.shortDescription }}</p>
-              <strong>${{ product.price }}</strong>
+              <strong>{{ product.price | currency: 'USD' : 'symbol-narrow' }}</strong>
             </div>
           </a>
         }
@@ -87,8 +87,8 @@
               <p>{{ service.description }}</p>
               <strong>
                 @if (service.priceType === 'quote') { Solicitar cotización }
-                @else if (service.priceType === 'from') { Desde ${{ service.price }} }
-                @else { ${{ service.price }} }
+                @else if (service.priceType === 'from') { Desde {{ service.price | currency: 'USD' : 'symbol-narrow' }} }
+                @else { {{ service.price | currency: 'USD' : 'symbol-narrow' }} }
               </strong>
             </div>
           </a>

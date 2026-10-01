@@ -20,6 +20,7 @@ export class ShopPage implements OnInit {
   private readonly router = inject(Router);
 
   loading = signal(true);
+  filtersOpen = signal(false);
   products = signal<Product[]>([]);
   divisions = signal<Division[]>([]);
   categories = signal<Category[]>([]);

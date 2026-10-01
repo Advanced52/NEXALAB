@@ -4,11 +4,19 @@
       <h1>Tienda NEXALAB</h1>
       <p>Productos de todas las divisiones en un solo catálogo.</p>
     </div>
-    <a class="nx-btn nx-btn-ghost" routerLink="/">Volver al inicio</a>
+    <div class="shop__head-actions">
+      <button class="nx-btn nx-btn-ghost shop__filter-toggle" type="button" (click)="filtersOpen.set(!filtersOpen())">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+          <path d="M2 4h12M4 8h8M6 12h4"/>
+        </svg>
+        Filtros
+      </button>
+      <a class="nx-btn nx-btn-ghost" routerLink="/">Volver al inicio</a>
+    </div>
   </header>
 
   <div class="shop__layout">
-    <aside class="shop__filters nx-card">
+    <aside class="shop__filters nx-card" [class.shop__filters--open]="filtersOpen()">
       <h2>Filtros</h2>
       <form (ngSubmit)="applyFilters()">
         <div class="nx-field">

@@ -5,6 +5,7 @@
 .division-hero {
   position: relative;
   min-height: 420px;
+  max-height: clamp(420px, 60vh, 640px);
   border-bottom: 1px solid var(--nx-border);
   overflow: hidden;
 }

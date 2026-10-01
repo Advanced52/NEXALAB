@@ -4,6 +4,7 @@
 
 .hero {
   position: relative;
+  min-height: calc(100vh - 74px);
   min-height: calc(100svh - 74px);
   display: flex;
   align-items: center;
@@ -67,7 +68,7 @@
 
 .hero__support {
   margin: 0 0 1.55rem;
-  color: #b8c4cc;
+  color: var(--nx-muted);
   font-size: 1.06rem;
   line-height: 1.55;
   max-width: 38ch;
@@ -182,7 +183,7 @@
 
 .hero__slide-caption p {
   margin: 0;
-  color: #c5ced4;
+  color: var(--nx-muted);
   font-size: 0.9rem;
   line-height: 1.4;
   display: -webkit-box;

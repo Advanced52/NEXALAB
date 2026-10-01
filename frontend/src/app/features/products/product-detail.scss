@@ -156,6 +156,18 @@
   white-space: pre-wrap;
 }
 
+@media (min-width: 768px) {
+  .detail {
+    padding: 1.75rem 2rem 3.5rem;
+  }
+
+  .detail__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+}
+
 @media (min-width: 900px) {
   .detail {
     padding: 2rem 2.5rem 4rem;

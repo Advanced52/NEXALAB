@@ -26,6 +26,31 @@
   gap: 1.25rem;
 }
 
+.shop__head-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.shop__filter-toggle {
+  display: inline-flex;
+  gap: 0.4rem;
+}
+
+.shop__filters {
+  display: none;
+}
+
+.shop__filters--open,
+.shop__filters {
+  /* open state applied by JS on mobile */
+}
+
+.shop__filters--open {
+  display: block;
+}
+
 .shop__filters h2 {
   margin: 0 0 1rem;
   font-size: 1rem;
@@ -91,8 +116,13 @@
   }
 
   .shop__filters {
+    display: block;
     position: sticky;
     top: 90px;
+  }
+
+  .shop__filter-toggle {
+    display: none;
   }
 
   .shop__grid {

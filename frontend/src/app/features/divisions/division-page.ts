@@ -1,3 +1,4 @@
+import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
@@ -7,7 +8,7 @@ import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-division-page',
-  imports: [RouterLink],
+  imports: [RouterLink, CurrencyPipe],
   templateUrl: './division-page.html',
   styleUrl: './division-page.scss',
 })

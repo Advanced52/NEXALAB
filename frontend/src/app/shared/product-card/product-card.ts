@@ -56,7 +56,7 @@ import { Product } from '../../core/models/api.models';
     .card__media img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
     }
     .card__badge {
       position: absolute;
