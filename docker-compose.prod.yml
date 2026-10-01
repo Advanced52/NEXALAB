@@ -1,0 +1,82 @@
+# Stack de producción para Portainer / servidor casero
+# Uso: Portainer → Stacks → Repository → docker-compose.prod.yml
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nexalab-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-nexalab}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE:-bd_nexalab}
+    volumes:
+      - nexalab_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          'pg_isready -U ${DB_USERNAME:-nexalab} -d ${DB_DATABASE:-bd_nexalab}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - nexalab
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: nexalab-backend:latest
+    container_name: nexalab-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      APP_PORT: 3000
+      APP_URL: ${APP_URL:-http://localhost}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      API_PREFIX: api/v1
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-nexalab}
+      DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE:-bd_nexalab}
+      DB_SYNC: ${DB_SYNC:-true}
+      DB_LOGGING: 'false'
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@nexalab.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD}
+      ADMIN_NAME: ${ADMIN_NAME:-Administrador NEXALAB}
+      UPLOAD_DIR: uploads
+      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-5}
+    volumes:
+      - nexalab_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - nexalab
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: nexalab-frontend:latest
+    container_name: nexalab-frontend
+    restart: unless-stopped
+    ports:
+      - '${NEXALAB_HTTP_PORT:-8088}:80'
+    depends_on:
+      - backend
+    networks:
+      - nexalab
+
+volumes:
+  nexalab_postgres_data:
+  nexalab_uploads:
+
+networks:
+  nexalab:
+    name: nexalab

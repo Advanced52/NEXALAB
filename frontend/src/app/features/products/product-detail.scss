@@ -1,0 +1,173 @@
+.detail {
+  padding: 1.5rem 1.25rem 3.5rem;
+}
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  color: var(--nx-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.crumbs a:hover {
+  color: var(--nx-cyan);
+}
+
+.detail__grid {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.gallery__main {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border-radius: 14px;
+  background: #111;
+  border: 1px solid var(--nx-border);
+}
+
+.gallery__thumbs {
+  display: flex;
+  gap: 0.55rem;
+  margin-top: 0.75rem;
+  overflow: auto;
+}
+
+.gallery__thumbs button {
+  border: 1px solid var(--nx-border);
+  background: transparent;
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.gallery__thumbs img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  background: #111;
+}
+
+.info__division {
+  margin: 0 0 0.4rem;
+  color: var(--nx-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+.info h1 {
+  margin: 0 0 0.65rem;
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+}
+
+.info__short {
+  margin: 0 0 1rem;
+  color: var(--nx-muted);
+  line-height: 1.5;
+}
+
+.info__price {
+  display: flex;
+  gap: 0.65rem;
+  align-items: baseline;
+  margin-bottom: 0.75rem;
+}
+
+.info__price strong {
+  font-size: 1.5rem;
+}
+
+.info__price s {
+  color: var(--nx-muted);
+}
+
+.meta {
+  margin: 0 0 0.35rem;
+  color: var(--nx-muted);
+  font-size: 0.9rem;
+}
+
+.meta.out {
+  color: var(--nx-danger);
+}
+
+.variants {
+  margin: 1.25rem 0;
+}
+
+.variants__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.variant {
+  border: 1px solid var(--nx-border);
+  background: transparent;
+  color: var(--nx-white);
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+}
+
+.variant.active {
+  border-color: var(--nx-cyan);
+  color: var(--nx-cyan);
+}
+
+.variant:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.buy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+  margin: 1.25rem 0;
+}
+
+.qty {
+  width: 110px;
+  margin: 0;
+}
+
+.info__desc {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--nx-border);
+}
+
+.info__desc h2 {
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
+}
+
+.info__desc p {
+  margin: 0;
+  color: var(--nx-muted);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+@media (min-width: 900px) {
+  .detail {
+    padding: 2rem 2.5rem 4rem;
+  }
+
+  .detail__grid {
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  .gallery__main {
+    aspect-ratio: 1;
+  }
+}

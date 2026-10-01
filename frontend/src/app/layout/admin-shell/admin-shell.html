@@ -1,0 +1,55 @@
+<div class="shell" [class.shell--open]="menuOpen()">
+  <aside class="shell__sidebar">
+    <div class="shell__brand">
+      <img src="assets/brand/logo-horizontal.png" alt="NEXALAB" />
+      <span>Admin</span>
+    </div>
+
+    <nav class="shell__nav">
+      @for (link of links; track link.path) {
+        <a
+          [routerLink]="link.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: link.exact }"
+          (click)="closeMenu()"
+        >
+          {{ link.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="shell__user">
+      <div>
+        <strong>{{ auth.user()?.name }}</strong>
+        <small>{{ auth.user()?.role?.name }}</small>
+      </div>
+      <button class="nx-btn nx-btn-ghost" type="button" (click)="logout()">Salir</button>
+    </div>
+  </aside>
+
+  <div class="shell__main">
+    <header class="shell__top">
+      <button class="nx-btn nx-btn-ghost shell__menu" type="button" (click)="toggleMenu()">
+        Menú
+      </button>
+      <div class="shell__top-brand">
+        <img src="assets/brand/icon.png" alt="" />
+        <span>NEXALAB</span>
+      </div>
+    </header>
+
+    <main class="shell__content">
+      <router-outlet />
+    </main>
+  </div>
+
+  <div class="shell__overlay" (click)="closeMenu()"></div>
+
+  <div class="toasts">
+    @for (msg of toast.messages(); track msg.id) {
+      <div class="nx-toast" [class.success]="msg.kind === 'success'" [class.error]="msg.kind === 'error'">
+        {{ msg.text }}
+      </div>
+    }
+  </div>
+</div>

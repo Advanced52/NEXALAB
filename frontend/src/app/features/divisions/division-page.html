@@ -1,0 +1,103 @@
+@if (loading()) {
+  <div class="nx-empty">Cargando división…</div>
+} @else if (error() || !division()) {
+  <div class="nx-empty">
+    <p>{{ error() || 'División no encontrada.' }}</p>
+    <a class="nx-btn nx-btn-primary" routerLink="/">Volver al inicio</a>
+  </div>
+} @else {
+  <section
+    class="division-hero"
+    [style.--accent]="division()!.primaryColor || '#34b3f1'"
+  >
+    <div class="division-hero__media">
+      <img
+        class="division-hero__banner"
+        [src]="division()!.bannerUrl || 'assets/brand/icon.png'"
+        [alt]="division()!.name"
+      />
+    </div>
+    <div class="division-hero__content">
+      <p class="division-hero__parent">Parte de <a routerLink="/">NEXALAB</a></p>
+      <div class="division-hero__identity">
+        @if (division()!.logoUrl) {
+          <img [src]="division()!.logoUrl!" [alt]="division()!.name" />
+        }
+        <div>
+          <h1>{{ division()!.name }}</h1>
+          <p>{{ division()!.shortDescription }}</p>
+        </div>
+      </div>
+      @if (division()!.description) {
+        <p class="division-hero__desc">{{ division()!.description }}</p>
+      }
+    </div>
+  </section>
+
+  @if (division()!.categories?.length) {
+    <section class="block">
+      <h2>Categorías</h2>
+      <div class="chips">
+        @for (cat of division()!.categories!; track cat.id) {
+          <a class="chip" [routerLink]="['/', division()!.slug, cat.slug]">{{ cat.name }}</a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (division()!.products?.length) {
+    <section class="block">
+      <h2>Productos</h2>
+      <div class="cards">
+        @for (product of division()!.products!; track product.id) {
+          <a
+            class="item-card"
+            [routerLink]="['/', division()!.slug, product.category?.slug || 'producto', product.slug]"
+          >
+            <img
+              [src]="product.images?.[0]?.url || 'assets/brand/icon.png'"
+              [alt]="product.name"
+            />
+            <div>
+              <h3>{{ product.name }}</h3>
+              <p>{{ product.shortDescription }}</p>
+              <strong>${{ product.price }}</strong>
+            </div>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (division()!.services?.length) {
+    <section class="block">
+      <h2>Servicios</h2>
+      <div class="cards">
+        @for (service of division()!.services!; track service.id) {
+          <a
+            class="item-card"
+            [routerLink]="['/', division()!.slug, service.category?.slug || 'servicio', service.slug]"
+          >
+            <img
+              [src]="service.imageUrl || 'assets/brand/icon.png'"
+              [alt]="service.name"
+            />
+            <div>
+              <h3>{{ service.name }}</h3>
+              <p>{{ service.description }}</p>
+              <strong>
+                @if (service.priceType === 'quote') { Solicitar cotización }
+                @else if (service.priceType === 'from') { Desde ${{ service.price }} }
+                @else { ${{ service.price }} }
+              </strong>
+            </div>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  @if (!division()!.products?.length && !division()!.services?.length) {
+    <div class="nx-empty">Esta división aún no tiene productos o servicios publicados.</div>
+  }
+}

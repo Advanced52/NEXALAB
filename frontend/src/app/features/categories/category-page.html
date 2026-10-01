@@ -1,0 +1,55 @@
+@if (loading()) {
+  <div class="nx-empty">Cargando categoría…</div>
+} @else if (error() || !category()) {
+  <div class="nx-empty">
+    <p>{{ error() }}</p>
+    <a class="nx-btn nx-btn-primary" [routerLink]="['/', divisionSlug()]">Volver a la división</a>
+  </div>
+} @else {
+  <section class="category">
+    <nav class="crumbs">
+      <a routerLink="/">NEXALAB</a>
+      <span>/</span>
+      <a [routerLink]="['/', divisionSlug()]">{{ category()!.division?.name }}</a>
+      <span>/</span>
+      <span>{{ category()!.name }}</span>
+    </nav>
+
+    <header class="category__head">
+      <h1>{{ category()!.name }}</h1>
+      @if (category()!.description) {
+        <p>{{ category()!.description }}</p>
+      }
+    </header>
+
+    @if (products().length) {
+      <div class="grid">
+        @for (product of products(); track product.id) {
+          <app-product-card [product]="product" />
+        }
+      </div>
+    }
+
+    @if (services().length) {
+      <h2>Servicios</h2>
+      <div class="services">
+        @for (service of services(); track service.id) {
+          <a
+            class="service"
+            [routerLink]="['/', divisionSlug(), category()!.slug, service.slug]"
+          >
+            <img [src]="service.imageUrl || 'assets/brand/icon.png'" [alt]="service.name" />
+            <div>
+              <h3>{{ service.name }}</h3>
+              <p>{{ service.description }}</p>
+            </div>
+          </a>
+        }
+      </div>
+    }
+
+    @if (!products().length && !services().length) {
+      <div class="nx-empty">No hay ítems en esta categoría.</div>
+    }
+  </section>
+}

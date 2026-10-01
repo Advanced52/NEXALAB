@@ -1,0 +1,79 @@
+<div class="public" [class.public--open]="menuOpen()">
+  <header class="public__header">
+    <a routerLink="/" class="public__logo" (click)="closeMenu()">
+      <img src="assets/brand/logo-horizontal.png" alt="NEXALAB" />
+    </a>
+
+    <nav class="public__nav">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Inicio</a>
+      <a href="/#explora" (click)="closeMenu()">Divisiones</a>
+      <a routerLink="/tienda" routerLinkActive="active" (click)="closeMenu()">Tienda</a>
+      @for (d of divisions().slice(0, 4); track d.id) {
+        <a [routerLink]="['/', d.slug]" routerLinkActive="active" (click)="closeMenu()">{{ d.name }}</a>
+      }
+    </nav>
+
+    <div class="public__actions">
+      <a class="public__cart" routerLink="/carrito" (click)="closeMenu()" aria-label="Carrito">
+        <span>Carrito</span>
+        @if (cart.count() > 0) {
+          <em>{{ cart.count() }}</em>
+        }
+      </a>
+      <button class="public__burger nx-btn nx-btn-ghost" type="button" (click)="toggleMenu()" aria-label="Menú">
+        Menú
+      </button>
+    </div>
+  </header>
+
+  <main class="public__main">
+    <router-outlet />
+  </main>
+
+  <footer class="public__footer">
+    <div class="public__footer-top">
+      <a routerLink="/" class="public__footer-logo">
+        <img src="assets/brand/logo-dark.png" alt="NEXALAB" />
+      </a>
+      <nav class="public__footer-links" aria-label="Enlaces del pie">
+        @for (d of divisions(); track d.id) {
+          <a [routerLink]="['/', d.slug]">{{ d.name }}</a>
+        }
+        <a routerLink="/tienda">Tienda</a>
+        <a routerLink="/carrito">Carrito</a>
+      </nav>
+    </div>
+
+    <p class="public__footer-tagline">Ideas · Tecnología · Soluciones</p>
+
+    <div class="public__footer-social" aria-label="Redes sociales">
+      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer">TikTok</a>
+      <a href="https://youtube.com" target="_blank" rel="noopener noreferrer">YouTube</a>
+    </div>
+
+    <p class="public__copy">© {{ year }} NEXALAB. Todos los derechos reservados.</p>
+  </footer>
+
+  @if (menuOpen()) {
+    <div class="public__drawer">
+      <a routerLink="/" (click)="closeMenu()">Inicio</a>
+      <a href="/#explora" (click)="closeMenu()">Divisiones</a>
+      <a routerLink="/tienda" (click)="closeMenu()">Tienda</a>
+      <a routerLink="/carrito" (click)="closeMenu()">Carrito ({{ cart.count() }})</a>
+      @for (d of divisions(); track d.id) {
+        <a [routerLink]="['/', d.slug]" (click)="closeMenu()">{{ d.name }}</a>
+      }
+    </div>
+    <div class="public__scrim" (click)="closeMenu()"></div>
+  }
+
+  <div class="toasts">
+    @for (msg of toast.messages(); track msg.id) {
+      <div class="nx-toast" [class.success]="msg.kind === 'success'" [class.error]="msg.kind === 'error'">
+        {{ msg.text }}
+      </div>
+    }
+  </div>
+</div>

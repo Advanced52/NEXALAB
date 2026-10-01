@@ -1,0 +1,31 @@
+<section>
+  <h1 class="nx-page-title">Usuarios</h1>
+  <p class="nx-page-sub">Cuentas con acceso a NEXALAB.</p>
+
+  @if (loading()) {
+    <div class="nx-empty">Cargando…</div>
+  } @else {
+    <div class="nx-table-wrap">
+      <table class="nx-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track item.id) {
+            <tr>
+              <td>{{ item.name }}</td>
+              <td>{{ item.email }}</td>
+              <td>{{ item.role.name }}</td>
+              <td>{{ item.status }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

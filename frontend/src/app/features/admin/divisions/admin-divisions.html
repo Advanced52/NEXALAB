@@ -1,0 +1,124 @@
+<section>
+  <div class="head">
+    <div>
+      <h1 class="nx-page-title">Divisiones</h1>
+      <p class="nx-page-sub">Administra las líneas de negocio de NEXALAB. Agregar una división no requiere código.</p>
+    </div>
+    <button class="nx-btn nx-btn-primary" type="button" (click)="openCreate()">Nueva división</button>
+  </div>
+
+  @if (showForm()) {
+    <form class="nx-card form" (ngSubmit)="save()">
+      <div class="nx-grid-2">
+        <div class="nx-field">
+          <label class="nx-label">Nombre</label>
+          <input class="nx-input" name="name" [(ngModel)]="form.name" required />
+        </div>
+        <div class="nx-field">
+          <label class="nx-label">Slug (opcional)</label>
+          <input class="nx-input" name="slug" [(ngModel)]="form.slug" placeholder="nexa-home" />
+        </div>
+        <div class="nx-field">
+          <label class="nx-label">Descripción corta</label>
+          <input class="nx-input" name="shortDescription" [(ngModel)]="form.shortDescription" />
+        </div>
+        <div class="nx-field">
+          <label class="nx-label">Color principal</label>
+          <input class="nx-input" type="color" name="primaryColor" [(ngModel)]="form.primaryColor" />
+        </div>
+        <div class="nx-field">
+          <label class="nx-label">Orden</label>
+          <input class="nx-input" type="number" name="sortOrder" [(ngModel)]="form.sortOrder" />
+        </div>
+        <div class="nx-field">
+          <label class="nx-label">Activa</label>
+          <select class="nx-select" name="isActive" [(ngModel)]="form.isActive">
+            <option [ngValue]="true">Sí</option>
+            <option [ngValue]="false">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="nx-field">
+        <label class="nx-label">Descripción</label>
+        <textarea class="nx-textarea" rows="3" name="description" [(ngModel)]="form.description"></textarea>
+      </div>
+
+      <div class="nx-grid-2">
+        <app-image-upload
+          label="Logo"
+          name="logoUrl"
+          [defaultAspect]="'1:1'"
+          [(ngModel)]="form.logoUrl"
+        />
+        <app-image-upload
+          label="Banner"
+          name="bannerUrl"
+          [defaultAspect]="'16:9'"
+          [preferTop]="true"
+          [(ngModel)]="form.bannerUrl"
+        />
+        <div class="nx-field">
+          <label class="nx-label">SEO Title</label>
+          <input class="nx-input" name="seoTitle" [(ngModel)]="form.seoTitle" />
+        </div>
+        <div class="nx-field">
+          <label class="nx-label">SEO Description</label>
+          <input class="nx-input" name="seoDescription" [(ngModel)]="form.seoDescription" />
+        </div>
+      </div>
+
+      <div class="nx-actions">
+        <button class="nx-btn nx-btn-primary" type="submit">Guardar</button>
+        <button class="nx-btn nx-btn-ghost" type="button" (click)="showForm.set(false)">Cancelar</button>
+      </div>
+    </form>
+  }
+
+  @if (loading()) {
+    <div class="nx-empty">Cargando…</div>
+  } @else if (!items().length) {
+    <div class="nx-empty">No hay divisiones todavía.</div>
+  } @else {
+    <div class="nx-table-wrap">
+      <table class="nx-table">
+        <thead>
+          <tr>
+            <th>Orden</th>
+            <th>Nombre</th>
+            <th>Slug</th>
+            <th>Color</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track item.id) {
+            <tr>
+              <td>{{ item.sortOrder }}</td>
+              <td>
+                <strong>{{ item.name }}</strong>
+                <div class="muted">{{ item.shortDescription }}</div>
+              </td>
+              <td>/{{ item.slug }}</td>
+              <td>
+                <span class="swatch" [style.background]="item.primaryColor || '#34b3f1'"></span>
+              </td>
+              <td>
+                <span class="nx-badge" [class.nx-badge-ok]="item.isActive" [class.nx-badge-off]="!item.isActive">
+                  {{ item.isActive ? 'Activa' : 'Inactiva' }}
+                </span>
+              </td>
+              <td>
+                <div class="nx-actions">
+                  <button class="nx-btn nx-btn-ghost" type="button" (click)="openEdit(item)">Editar</button>
+                  <button class="nx-btn nx-btn-danger" type="button" (click)="remove(item)">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

@@ -1,0 +1,114 @@
+<section class="shop">
+  <header class="shop__head">
+    <div>
+      <h1>Tienda NEXALAB</h1>
+      <p>Productos de todas las divisiones en un solo catálogo.</p>
+    </div>
+    <a class="nx-btn nx-btn-ghost" routerLink="/">Volver al inicio</a>
+  </header>
+
+  <div class="shop__layout">
+    <aside class="shop__filters nx-card">
+      <h2>Filtros</h2>
+      <form (ngSubmit)="applyFilters()">
+        <div class="nx-field">
+          <label class="nx-label">División</label>
+          <select
+            class="nx-select"
+            name="divisionSlug"
+            [(ngModel)]="filters.divisionSlug"
+            (ngModelChange)="onDivisionChange()"
+          >
+            <option value="">Todas</option>
+            @for (d of divisions(); track d.id) {
+              <option [value]="d.slug">{{ d.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="nx-field">
+          <label class="nx-label">Categoría</label>
+          <select class="nx-select" name="categorySlug" [(ngModel)]="filters.categorySlug">
+            <option value="">Todas</option>
+            @for (c of filteredCategories(); track c.id) {
+              <option [value]="c.slug">{{ c.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="nx-field">
+          <label class="nx-label">Tipo</label>
+          <select class="nx-select" name="type" [(ngModel)]="filters.type">
+            <option value="">Todos</option>
+            <option value="physical">Físico</option>
+            <option value="digital">Digital</option>
+          </select>
+        </div>
+
+        <div class="price-row">
+          <div class="nx-field">
+            <label class="nx-label">Precio min</label>
+            <input
+              class="nx-input"
+              type="number"
+              min="0"
+              step="0.01"
+              name="minPrice"
+              [(ngModel)]="filters.minPrice"
+            />
+          </div>
+          <div class="nx-field">
+            <label class="nx-label">Precio max</label>
+            <input
+              class="nx-input"
+              type="number"
+              min="0"
+              step="0.01"
+              name="maxPrice"
+              [(ngModel)]="filters.maxPrice"
+            />
+          </div>
+        </div>
+
+        <div class="nx-field">
+          <label class="nx-label">Buscar</label>
+          <input
+            class="nx-input"
+            name="search"
+            [(ngModel)]="filters.search"
+            placeholder="Nombre o descripción"
+          />
+        </div>
+
+        <label class="stock">
+          <input type="checkbox" name="inStock" [(ngModel)]="filters.inStock" />
+          Solo disponibles
+        </label>
+
+        <div class="nx-actions">
+          <button class="nx-btn nx-btn-primary" type="submit">Aplicar</button>
+          <button class="nx-btn nx-btn-ghost" type="button" (click)="clearFilters()">Limpiar</button>
+        </div>
+      </form>
+    </aside>
+
+    <div class="shop__results">
+      @if (loading()) {
+        <div class="shop__grid">
+          @for (_ of [1, 2, 3, 4, 5, 6]; track $index) {
+            <div class="skeleton"></div>
+          }
+        </div>
+      } @else if (!products().length) {
+        <div class="nx-empty">No hay productos con estos filtros.</div>
+      } @else {
+        <p class="shop__count">{{ products().length }} producto(s)</p>
+        <div class="shop__grid">
+          @for (product of products(); track product.id) {
+            <app-product-card [product]="product" />
+          }
+        </div>
+      }
+    </div>
+  </div>
+</section>

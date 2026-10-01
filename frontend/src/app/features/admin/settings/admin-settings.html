@@ -1,0 +1,31 @@
+<section>
+  <h1 class="nx-page-title">Configuración</h1>
+  <p class="nx-page-sub">Contenido editable del sitio corporativo NEXALAB.</p>
+
+  @if (loading()) {
+    <div class="nx-empty">Cargando…</div>
+  } @else {
+    <form class="nx-card" (ngSubmit)="saveHero()">
+      <h2>Hero principal</h2>
+      <div class="nx-grid-2">
+        <div class="nx-field">
+          <label class="nx-label">Marca</label>
+          <input class="nx-input" name="brand" [(ngModel)]="hero.brand" />
+        </div>
+        <div class="nx-field">
+          <label class="nx-label">CTA</label>
+          <input class="nx-input" name="ctaLabel" [(ngModel)]="hero.ctaLabel" />
+        </div>
+      </div>
+      <div class="nx-field">
+        <label class="nx-label">Headline</label>
+        <input class="nx-input" name="headline" [(ngModel)]="hero.headline" />
+      </div>
+      <div class="nx-field">
+        <label class="nx-label">Subheadline</label>
+        <textarea class="nx-textarea" rows="2" name="subheadline" [(ngModel)]="hero.subheadline"></textarea>
+      </div>
+      <button class="nx-btn nx-btn-primary" type="submit">Guardar hero</button>
+    </form>
+  }
+</section>

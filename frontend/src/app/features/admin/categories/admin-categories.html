@@ -1,0 +1,89 @@
+<section>
+  <div class="head">
+    <div>
+      <h1 class="nx-page-title">Categorías</h1>
+      <p class="nx-page-sub">Organizan productos y servicios dentro de cada división.</p>
+    </div>
+    <button class="nx-btn nx-btn-primary" type="button" (click)="openCreate()">Nueva categoría</button>
+  </div>
+
+  @if (showForm()) {
+    <form class="nx-card form" (ngSubmit)="save()">
+      <div class="nx-grid-2">
+        <div class="nx-field">
+          <label class="nx-label">División</label>
+          <select class="nx-select" name="divisionId" [(ngModel)]="form.divisionId" required>
+            @for (d of divisions(); track d.id) {
+              <option [value]="d.id">{{ d.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="nx-field">
+          <label class="nx-label">Nombre</label>
+          <input class="nx-input" name="name" [(ngModel)]="form.name" required />
+        </div>
+        <div class="nx-field">
+          <label class="nx-label">Slug</label>
+          <input class="nx-input" name="slug" [(ngModel)]="form.slug" />
+        </div>
+        <div class="nx-field">
+          <label class="nx-label">Orden</label>
+          <input class="nx-input" type="number" name="sortOrder" [(ngModel)]="form.sortOrder" />
+        </div>
+      </div>
+      <div class="nx-field">
+        <label class="nx-label">Descripción</label>
+        <textarea class="nx-textarea" rows="3" name="description" [(ngModel)]="form.description"></textarea>
+      </div>
+      <app-image-upload
+        label="Imagen de categoría"
+        name="imageUrl"
+        [(ngModel)]="form.imageUrl"
+      />
+      <div class="nx-actions">
+        <button class="nx-btn nx-btn-primary" type="submit">Guardar</button>
+        <button class="nx-btn nx-btn-ghost" type="button" (click)="showForm.set(false)">Cancelar</button>
+      </div>
+    </form>
+  }
+
+  @if (loading()) {
+    <div class="nx-empty">Cargando…</div>
+  } @else if (!items().length) {
+    <div class="nx-empty">No hay categorías.</div>
+  } @else {
+    <div class="nx-table-wrap">
+      <table class="nx-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>División</th>
+            <th>Slug</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track item.id) {
+            <tr>
+              <td><strong>{{ item.name }}</strong></td>
+              <td>{{ item.division?.name || '—' }}</td>
+              <td>{{ item.slug }}</td>
+              <td>
+                <span class="nx-badge" [class.nx-badge-ok]="item.isActive" [class.nx-badge-off]="!item.isActive">
+                  {{ item.isActive ? 'Activa' : 'Inactiva' }}
+                </span>
+              </td>
+              <td>
+                <div class="nx-actions">
+                  <button class="nx-btn nx-btn-ghost" type="button" (click)="openEdit(item)">Editar</button>
+                  <button class="nx-btn nx-btn-danger" type="button" (click)="remove(item)">Eliminar</button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

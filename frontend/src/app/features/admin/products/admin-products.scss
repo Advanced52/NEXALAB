@@ -1,0 +1,16 @@
+.head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.form {
+  margin-bottom: 1.25rem;
+}
+
+.muted {
+  color: var(--nx-muted);
+  font-size: 0.85rem;
+}

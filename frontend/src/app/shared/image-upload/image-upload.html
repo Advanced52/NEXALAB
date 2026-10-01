@@ -1,0 +1,108 @@
+<div class="upload" [class.upload--disabled]="disabled()">
+  <div class="upload__label">{{ label() }}</div>
+
+  <div class="upload__row">
+    <label class="nx-btn nx-btn-ghost upload__btn">
+      {{ uploading() ? 'Subiendo…' : 'Cargar imagen' }}
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        [disabled]="disabled() || uploading() || editorOpen()"
+        (change)="onFileSelected($event)"
+      />
+    </label>
+    @if (value()) {
+      <button class="nx-btn nx-btn-danger" type="button" [disabled]="disabled()" (click)="clear()">
+        Quitar
+      </button>
+    }
+  </div>
+
+  <p class="upload__hint">{{ hint() }}</p>
+
+  <div class="nx-field">
+    <label class="nx-label">URL (opcional / automática)</label>
+    <input
+      class="nx-input"
+      type="url"
+      [value]="value()"
+      [disabled]="disabled()"
+      placeholder="https://…"
+      (input)="onUrlInput($event)"
+    />
+  </div>
+
+  @if (value()) {
+    <div class="upload__preview">
+      <img [src]="value()" [alt]="label()" />
+    </div>
+  }
+</div>
+
+@if (editorOpen()) {
+  <div class="cropper" role="dialog" aria-modal="true" aria-label="Encuadrar imagen">
+    <div class="cropper__panel">
+      <header class="cropper__head">
+        <div>
+          <h3>Encuadrar imagen</h3>
+          <p>
+            Solo lo que queda <strong>dentro del recuadro azul</strong> se subirá.
+            Arrastra la foto para moverla.
+          </p>
+        </div>
+        <button class="nx-btn nx-btn-ghost" type="button" (click)="cancelEditor()">Cerrar</button>
+      </header>
+
+      <div class="cropper__aspects">
+        <button type="button" [class.active]="aspect() === '1:1'" (click)="setAspect('1:1')">1:1 Producto</button>
+        <button type="button" [class.active]="aspect() === '4:3'" (click)="setAspect('4:3')">4:3 Tarjeta</button>
+        <button type="button" [class.active]="aspect() === '16:9'" (click)="setAspect('16:9')">16:9 Banner</button>
+        <button type="button" [class.active]="aspect() === '3:1'" (click)="setAspect('3:1')">3:1 Portada</button>
+      </div>
+
+      <div class="cropper__stage" (pointerdown)="startDrag($event)">
+        <div class="cropper__veil" aria-hidden="true"></div>
+        <div
+          #frameEl
+          class="cropper__frame"
+          [style.aspect-ratio]="frameAspect()"
+        >
+          <img
+            #sourceImg
+            class="cropper__image"
+            [src]="sourceUrl()!"
+            alt="Vista previa para encuadre"
+            [style.width]="imageStyle().width"
+            [style.height]="imageStyle().height"
+            [style.left]="imageStyle().left"
+            [style.top]="imageStyle().top"
+            (load)="onImageLoaded($event)"
+            draggable="false"
+          />
+        </div>
+        <div class="cropper__hint-float">Arrastra dentro del recuadro azul</div>
+      </div>
+
+      <div class="cropper__zoom">
+        <label>Zoom</label>
+        <input
+          type="range"
+          min="1"
+          max="3"
+          step="0.01"
+          [value]="zoom()"
+          (input)="onZoomChange($event)"
+        />
+      </div>
+
+      <footer class="cropper__actions">
+        <button class="nx-btn nx-btn-ghost" type="button" [disabled]="uploading()" (click)="useFullImage()">
+          Usar imagen completa (sin recortar)
+        </button>
+        <button class="nx-btn nx-btn-primary" type="button" [disabled]="uploading()" (click)="applyCrop()">
+          {{ uploading() ? 'Subiendo…' : 'Aplicar encuadre y subir' }}
+        </button>
+      </footer>
+    </div>
+  </div>
+}

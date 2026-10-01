@@ -1,0 +1,49 @@
+<section class="cart">
+  <header class="cart__head">
+    <h1>Carrito</h1>
+    <p>Carrito global NEXALAB — productos de cualquier división.</p>
+  </header>
+
+  @if (!cart.items().length) {
+    <div class="nx-empty">
+      <p>Tu carrito está vacío.</p>
+      <a class="nx-btn nx-btn-primary" routerLink="/tienda">Ir a la tienda</a>
+    </div>
+  } @else {
+    <div class="cart__list">
+      @for (item of cart.items(); track item.id) {
+        <article class="line">
+          <img [src]="item.imageUrl || 'assets/brand/icon.png'" [alt]="item.name" />
+          <div class="line__body">
+            <span class="line__div">{{ item.divisionName }}</span>
+            <h2>{{ item.name }}</h2>
+            @if (item.variantLabel) {
+              <p>{{ item.variantLabel }}</p>
+            }
+            <strong>{{ item.unitPrice | currency: 'USD' : 'symbol-narrow' }}</strong>
+          </div>
+          <div class="line__actions">
+            <input
+              class="nx-input"
+              type="number"
+              min="1"
+              [ngModel]="item.quantity"
+              (ngModelChange)="updateQty(item.id, $event)"
+            />
+            <button class="nx-btn nx-btn-danger" type="button" (click)="remove(item.id)">Quitar</button>
+          </div>
+        </article>
+      }
+    </div>
+
+    <aside class="cart__summary nx-card">
+      <div class="row">
+        <span>Subtotal</span>
+        <strong>{{ cart.subtotal() | currency: 'USD' : 'symbol-narrow' }}</strong>
+      </div>
+      <p class="hint">Checkout completo en la siguiente fase.</p>
+      <a class="nx-btn nx-btn-primary" routerLink="/checkout">Ir al checkout</a>
+      <a class="nx-btn nx-btn-ghost" routerLink="/tienda">Seguir comprando</a>
+    </aside>
+  }
+</section>

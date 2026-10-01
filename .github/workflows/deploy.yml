@@ -1,0 +1,26 @@
+# Auto-despliegue: push a main → avisa a Portainer para reconstruir el stack
+#
+# 1. En Portainer: Stack → Webhooks → copia la URL
+# 2. En GitHub: Settings → Secrets → Actions → PORTAINER_WEBHOOK_URL
+
+name: Deploy NEXALAB
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  notify-portainer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Portainer stack webhook
+        env:
+          WEBHOOK_URL: ${{ secrets.PORTAINER_WEBHOOK_URL }}
+        run: |
+          if [ -z "$WEBHOOK_URL" ]; then
+            echo "Falta el secret PORTAINER_WEBHOOK_URL. Configúralo en GitHub → Settings → Secrets."
+            exit 1
+          fi
+          curl -fsS -X POST "$WEBHOOK_URL"
+          echo "Portainer notificado: reconstruirá el stack."

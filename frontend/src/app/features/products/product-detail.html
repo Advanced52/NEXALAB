@@ -1,0 +1,115 @@
+@if (loading()) {
+  <div class="nx-empty">Cargando producto…</div>
+} @else if (error() || !product()) {
+  <div class="nx-empty">
+    <p>{{ error() }}</p>
+    <a class="nx-btn nx-btn-primary" routerLink="/tienda">Ir a la tienda</a>
+  </div>
+} @else {
+  <section class="detail">
+    <nav class="crumbs">
+      <a routerLink="/">NEXALAB</a>
+      <span>/</span>
+      @if (product()!.division) {
+        <a [routerLink]="['/', product()!.division!.slug]">{{ product()!.division!.name }}</a>
+        <span>/</span>
+      }
+      @if (product()!.category) {
+        <a [routerLink]="['/', product()!.division!.slug, product()!.category!.slug]">
+          {{ product()!.category!.name }}
+        </a>
+        <span>/</span>
+      }
+      <span>{{ product()!.name }}</span>
+    </nav>
+
+    <div class="detail__grid">
+      <div class="gallery">
+        <img class="gallery__main" [src]="selectedImage()" [alt]="product()!.name" />
+        @if (product()!.images?.length) {
+          <div class="gallery__thumbs">
+            @for (image of product()!.images!; track image.id) {
+              <button type="button" (click)="selectImage(image.url)">
+                <img [src]="image.url" [alt]="image.alt || product()!.name" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="info">
+        <p class="info__division">{{ product()!.division?.name }}</p>
+        <h1>{{ product()!.name }}</h1>
+        @if (product()!.shortDescription) {
+          <p class="info__short">{{ product()!.shortDescription }}</p>
+        }
+
+        <div class="info__price">
+          <strong>{{ displayPrice() | currency: 'USD' : 'symbol-narrow' }}</strong>
+          @if (product()!.compareAtPrice) {
+            <s>{{ product()!.compareAtPrice | currency: 'USD' : 'symbol-narrow' }}</s>
+          }
+        </div>
+
+        @if (product()!.sku) {
+          <p class="meta">SKU: {{ selectedVariant()?.sku || product()!.sku }}</p>
+        }
+
+        <p class="meta" [class.out]="availableStock() <= 0">
+          Stock: {{ availableStock() > 0 ? availableStock() : 'Agotado' }}
+        </p>
+
+        @if (activeVariants().length) {
+          <div class="variants">
+            <label class="nx-label">Variante</label>
+            <div class="variants__list">
+              @for (variant of activeVariants(); track variant.id) {
+                <button
+                  type="button"
+                  class="variant"
+                  [class.active]="selectedVariantId() === variant.id"
+                  [disabled]="variant.stock <= 0"
+                  (click)="selectVariant(variant)"
+                >
+                  {{ variant.size?.name || '' }}
+                  @if (variant.size && variant.color) { / }
+                  {{ variant.color?.name || '' }}
+                  @if (!variant.size && !variant.color) { {{ variant.sku }} }
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="buy">
+          <div class="nx-field qty">
+            <label class="nx-label">Cantidad</label>
+            <input
+              class="nx-input"
+              type="number"
+              min="1"
+              [max]="availableStock() || 1"
+              name="quantity"
+              [(ngModel)]="quantity"
+            />
+          </div>
+          <button
+            class="nx-btn nx-btn-primary"
+            type="button"
+            [disabled]="availableStock() <= 0"
+            (click)="addToCart()"
+          >
+            Agregar al carrito
+          </button>
+        </div>
+
+        @if (product()!.description) {
+          <div class="info__desc">
+            <h2>Descripción</h2>
+            <p>{{ product()!.description }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+}

@@ -1,0 +1,31 @@
+<section>
+  <h1 class="nx-page-title">Dashboard</h1>
+  <p class="nx-page-sub">Resumen operativo de la plataforma NEXALAB.</p>
+
+  @if (loading()) {
+    <div class="nx-empty">Cargando métricas…</div>
+  } @else {
+    <div class="cards">
+      <a class="nx-card card" routerLink="/admin/divisions">
+        <span>Divisiones</span>
+        <strong>{{ stats().divisions }}</strong>
+      </a>
+      <a class="nx-card card" routerLink="/admin/categories">
+        <span>Categorías</span>
+        <strong>{{ stats().categories }}</strong>
+      </a>
+      <a class="nx-card card" routerLink="/admin/products">
+        <span>Productos</span>
+        <strong>{{ stats().products }}</strong>
+      </a>
+      <a class="nx-card card" routerLink="/admin/services">
+        <span>Servicios</span>
+        <strong>{{ stats().services }}</strong>
+      </a>
+      <a class="nx-card card" routerLink="/admin/users">
+        <span>Usuarios</span>
+        <strong>{{ stats().users }}</strong>
+      </a>
+    </div>
+  }
+</section>
