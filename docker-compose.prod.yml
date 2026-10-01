@@ -1,8 +1,7 @@
-# Stack de producción para Portainer (usa Postgres que ya tienes)
+# Stack de producción para Portainer
+# Repository: https://github.com/Advanced52/NEXALAB.git
 # Compose path: docker-compose.prod.yml
-#
-# Importante: une este stack a la misma red Docker donde corre tu Postgres.
-# En Portainer: Stack → Editor → al final, o en Advanced → Networks.
+# Reference: refs/heads/main
 
 services:
   backend:
@@ -15,28 +14,28 @@ services:
     environment:
       NODE_ENV: production
       APP_PORT: 3000
-      APP_URL: ${APP_URL:-http://localhost}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost}
+      APP_URL: ${APP_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
       API_PREFIX: api/v1
-      DB_HOST: ${DB_HOST:?set DB_HOST}
-      DB_PORT: ${DB_PORT:-5432}
-      DB_USERNAME: ${DB_USERNAME:?set DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD}
-      DB_DATABASE: ${DB_DATABASE:-bd_nexalab}
-      DB_SYNC: ${DB_SYNC:-true}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_SYNC: ${DB_SYNC}
       DB_LOGGING: 'false'
-      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
-      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@nexalab.local}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD}
-      ADMIN_NAME: ${ADMIN_NAME:-Administrador NEXALAB}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_NAME: ${ADMIN_NAME}
       UPLOAD_DIR: uploads
-      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB:-5}
+      MAX_FILE_SIZE_MB: ${MAX_FILE_SIZE_MB}
     volumes:
       - nexalab_uploads:/app/uploads
     networks:
       - nexalab
-      - shared
+      - postgres_default
 
   frontend:
     build:
@@ -46,7 +45,7 @@ services:
     container_name: nexalab-frontend
     restart: unless-stopped
     ports:
-      - '${NEXALAB_HTTP_PORT:-8088}:80'
+      - '${NEXALAB_HTTP_PORT}:80'
     depends_on:
       - backend
     networks:
@@ -58,8 +57,6 @@ volumes:
 networks:
   nexalab:
     name: nexalab
-  # Red Docker donde ya corre tu Postgres (obligatoria).
-  # Ejemplo: si el otro stack usa la red "proxy", pon DOCKER_SHARED_NETWORK=proxy
-  shared:
+  postgres_default:
     external: true
-    name: ${DOCKER_SHARED_NETWORK:?set DOCKER_SHARED_NETWORK}
+    name: postgres_default
