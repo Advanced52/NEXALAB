@@ -58,6 +58,14 @@
           [preferTop]="true"
           [(ngModel)]="form.bannerUrl"
         />
+        <app-image-upload
+          label="Imagen del carrusel (inicio)"
+          name="heroImageUrl"
+          hint="Se muestra completa en el carrusel del inicio. Usa «Usar imagen completa (sin recortar)». Si la dejas vacía se usa el banner."
+          [defaultAspect]="'16:9'"
+          [preferTop]="true"
+          [(ngModel)]="form.heroImageUrl"
+        />
         <div class="nx-field">
           <label class="nx-label">SEO Title</label>
           <input class="nx-input" name="seoTitle" [(ngModel)]="form.seoTitle" />

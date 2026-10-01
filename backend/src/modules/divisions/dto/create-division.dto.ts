@@ -43,6 +43,11 @@ export class CreateDivisionDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(500)
+  heroImageUrl?: string | null;
+
+  @IsOptional()
+  @IsString()
   @MaxLength(20)
   primaryColor?: string;
 

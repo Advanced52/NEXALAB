@@ -81,7 +81,12 @@ export class HomePage implements OnInit {
   }
 
   slideImage(division: Division): string {
-    return division.bannerUrl || division.logoUrl || 'assets/brand/icon.png';
+    return (
+      division.heroImageUrl ||
+      division.bannerUrl ||
+      division.logoUrl ||
+      'assets/brand/icon.png'
+    );
   }
 
   selectSlide(index: number) {

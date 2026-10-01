@@ -29,6 +29,7 @@ export interface Division {
   shortDescription?: string | null;
   logoUrl?: string | null;
   bannerUrl?: string | null;
+  heroImageUrl?: string | null;
   primaryColor?: string | null;
   isActive: boolean;
   sortOrder: number;

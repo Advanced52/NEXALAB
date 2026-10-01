@@ -28,6 +28,7 @@ export class DivisionsService {
       shortDescription: dto.shortDescription ?? null,
       logoUrl: dto.logoUrl ?? null,
       bannerUrl: dto.bannerUrl ?? null,
+      heroImageUrl: dto.heroImageUrl ?? null,
       primaryColor: dto.primaryColor ?? null,
       isActive: dto.isActive ?? true,
       sortOrder: dto.sortOrder ?? 0,
@@ -113,6 +114,9 @@ export class DivisionsService {
     }
     if (dto.logoUrl !== undefined) division.logoUrl = dto.logoUrl;
     if (dto.bannerUrl !== undefined) division.bannerUrl = dto.bannerUrl;
+    if (dto.heroImageUrl !== undefined) {
+      division.heroImageUrl = dto.heroImageUrl || null;
+    }
     if (dto.primaryColor !== undefined) division.primaryColor = dto.primaryColor;
     if (dto.isActive !== undefined) division.isActive = dto.isActive;
     if (dto.sortOrder !== undefined) division.sortOrder = dto.sortOrder;

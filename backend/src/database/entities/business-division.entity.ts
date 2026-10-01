@@ -35,6 +35,10 @@ export class BusinessDivision {
   @Column({ name: 'banner_url', type: 'varchar', length: 500, nullable: true })
   bannerUrl: string | null;
 
+  /** Imagen completa (sin recorte) para el carrusel del inicio */
+  @Column({ name: 'hero_image_url', type: 'varchar', length: 500, nullable: true })
+  heroImageUrl: string | null;
+
   @Column({ name: 'primary_color', type: 'varchar', length: 20, nullable: true })
   primaryColor: string | null;
 

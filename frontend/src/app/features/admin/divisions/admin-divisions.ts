@@ -30,6 +30,7 @@ export class AdminDivisions implements OnInit {
     isActive: true,
     logoUrl: '',
     bannerUrl: '',
+    heroImageUrl: '',
     seoTitle: '',
     seoDescription: '',
   };
@@ -64,6 +65,7 @@ export class AdminDivisions implements OnInit {
       isActive: true,
       logoUrl: '',
       bannerUrl: '',
+    heroImageUrl: '',
       seoTitle: '',
       seoDescription: '',
     };
@@ -82,6 +84,7 @@ export class AdminDivisions implements OnInit {
       isActive: item.isActive,
       logoUrl: item.logoUrl || '',
       bannerUrl: item.bannerUrl || '',
+      heroImageUrl: item.heroImageUrl || '',
       seoTitle: item.seoTitle || '',
       seoDescription: item.seoDescription || '',
     };
@@ -94,6 +97,8 @@ export class AdminDivisions implements OnInit {
       slug: this.form.slug || undefined,
       logoUrl: this.form.logoUrl || undefined,
       bannerUrl: this.form.bannerUrl || undefined,
+      // null permite quitar la imagen y volver a usar el banner
+      heroImageUrl: this.form.heroImageUrl || null,
       seoTitle: this.form.seoTitle || undefined,
       seoDescription: this.form.seoDescription || undefined,
     };
