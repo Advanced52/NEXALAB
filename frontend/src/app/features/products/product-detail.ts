@@ -99,6 +99,11 @@ export class ProductDetailPage implements OnInit {
     }
   }
 
+  stepQuantity(delta: number) {
+    const max = this.availableStock() || 1;
+    this.quantity = Math.min(max, Math.max(1, Number(this.quantity || 1) + delta));
+  }
+
   selectImage(url: string) {
     this.selectedImage.set(url);
   }

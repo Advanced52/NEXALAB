@@ -4,7 +4,7 @@
     <div class="hero__glow"></div>
   </div>
 
-  <div class="hero__layout">
+  <div class="hero__layout nx-container">
     <div class="hero__content">
       <h1 class="hero__headline">{{ hero().headline }}</h1>
       <p class="hero__support">{{ hero().subheadline }}</p>
@@ -44,7 +44,7 @@
               />
               <div
                 class="hero__slide-caption"
-                [style.--accent]="item.primaryColor || '#34b3f1'"
+                [style.--accent]="item.primaryColor || 'var(--nx-cyan)'"
               >
                 <span class="hero__slide-tag">División</span>
                 <strong>{{ item.name }}</strong>
@@ -92,6 +92,7 @@
 </section>
 
 <section class="explore" id="explora">
+  <div class="nx-container">
   <div class="explore__intro">
     <p class="explore__eyebrow">Explora NEXALAB</p>
     <h2>Una marca. Varias líneas de creación.</h2>
@@ -117,7 +118,7 @@
         <a
           class="division-tile"
           [routerLink]="['/', division.slug]"
-          [style.--accent]="division.primaryColor || '#34b3f1'"
+          [style.--accent]="division.primaryColor || 'var(--nx-cyan)'"
           [style.animation-delay.ms]="i * 80"
         >
           <div class="division-tile__media">
@@ -135,4 +136,24 @@
       }
     </div>
   }
+  </div>
 </section>
+
+@if (featured().length) {
+  <section class="featured">
+    <div class="nx-container">
+      <header class="featured__head">
+        <div>
+          <p class="explore__eyebrow">Tienda</p>
+          <h2>Productos destacados</h2>
+        </div>
+        <a class="featured__link" routerLink="/tienda">Ver toda la tienda →</a>
+      </header>
+      <div class="nx-catalog-grid">
+        @for (product of featured(); track product.id) {
+          <app-product-card [product]="product" />
+        }
+      </div>
+    </div>
+  </section>
+}

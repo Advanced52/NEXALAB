@@ -14,13 +14,29 @@
     </nav>
 
     <div class="public__actions">
-      <a class="public__cart" routerLink="/carrito" (click)="closeMenu()" aria-label="Carrito">
-        <span>Carrito</span>
+      <a
+        class="public__cart"
+        routerLink="/carrito"
+        routerLinkActive="active"
+        (click)="closeMenu()"
+        [attr.aria-label]="'Carrito, ' + cart.count() + ' productos'"
+      >
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 7h12l-1 13H7L6 7z" />
+          <path d="M9 7V6a3 3 0 0 1 6 0v1" />
+        </svg>
         @if (cart.count() > 0) {
           <em>{{ cart.count() }}</em>
         }
       </a>
-      <button class="public__burger nx-btn nx-btn-ghost" type="button" (click)="toggleMenu()" aria-label="Abrir menú">
+      <button
+        class="public__burger"
+        type="button"
+        (click)="toggleMenu()"
+        aria-label="Abrir menú"
+        aria-controls="public-drawer"
+        [attr.aria-expanded]="menuOpen()"
+      >
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
           <line x1="2" y1="5" x2="18" y2="5"/>
           <line x1="2" y1="10" x2="18" y2="10"/>
@@ -60,28 +76,62 @@
     <p class="public__copy">© {{ year }} NEXALAB. Todos los derechos reservados.</p>
   </footer>
 
-  @if (menuOpen()) {
-    <div class="public__drawer">
+  <div
+    id="public-drawer"
+    class="public__drawer"
+    [class.public__drawer--open]="menuOpen()"
+    [attr.aria-hidden]="!menuOpen()"
+    [attr.inert]="menuOpen() ? null : ''"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menú"
+  >
+    <div class="public__drawer-head">
+      <img src="assets/brand/logo-horizontal.png" alt="NEXALAB" />
       <button class="public__drawer-close" type="button" (click)="closeMenu()" aria-label="Cerrar menú">
         <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
           <line x1="4" y1="4" x2="18" y2="18"/>
           <line x1="18" y1="4" x2="4" y2="18"/>
         </svg>
       </button>
-      <a routerLink="/" (click)="closeMenu()">Inicio</a>
-      <a href="/#explora" (click)="closeMenu()">Divisiones</a>
-      <a routerLink="/tienda" (click)="closeMenu()">Tienda</a>
-      <a routerLink="/carrito" (click)="closeMenu()">Carrito ({{ cart.count() }})</a>
-      @for (d of divisions(); track d.id) {
-        <a [routerLink]="['/', d.slug]" (click)="closeMenu()">{{ d.name }}</a>
-      }
     </div>
+
+    <nav class="public__drawer-nav" aria-label="Principal">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMenu()">Inicio</a>
+      <a routerLink="/tienda" routerLinkActive="active" (click)="closeMenu()">Tienda</a>
+      <a routerLink="/carrito" routerLinkActive="active" (click)="closeMenu()">
+        Carrito
+        @if (cart.count() > 0) {
+          <em>{{ cart.count() }}</em>
+        }
+      </a>
+    </nav>
+
+    @if (divisions().length) {
+      <p class="public__drawer-label">Divisiones</p>
+      <nav class="public__drawer-divisions" aria-label="Divisiones">
+        @for (d of divisions(); track d.id) {
+          <a
+            [routerLink]="['/', d.slug]"
+            routerLinkActive="active"
+            [style.--accent]="d.primaryColor || null"
+            (click)="closeMenu()"
+          >
+            <i aria-hidden="true"></i>{{ d.name }}
+          </a>
+        }
+      </nav>
+    }
+
+    <p class="public__drawer-tagline">Ideas · Tecnología · Soluciones</p>
+  </div>
+  @if (menuOpen()) {
     <div class="public__scrim" (click)="closeMenu()"></div>
   }
 
   <div class="toasts">
     @for (msg of toast.messages(); track msg.id) {
-      <div class="nx-toast" [class.success]="msg.kind === 'success'" [class.error]="msg.kind === 'error'">
+      <div class="nx-toast" role="status" [class.success]="msg.kind === 'success'" [class.error]="msg.kind === 'error'">
         {{ msg.text }}
       </div>
     }

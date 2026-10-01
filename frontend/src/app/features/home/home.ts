@@ -8,16 +8,17 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
-import { Division } from '../../core/models/api.models';
+import { catchError, forkJoin, of } from 'rxjs';
+import { Division, Product } from '../../core/models/api.models';
 import {
   CatalogService,
   HomeHero,
 } from '../../core/services/catalog.service';
+import { ProductCard } from '../../shared/product-card/product-card';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink],
+  imports: [RouterLink, ProductCard],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
@@ -38,6 +39,7 @@ export class HomePage implements OnInit {
     ctaHref: '/tienda',
   });
   divisions = signal<Division[]>([]);
+  featured = signal<Product[]>([]);
   activeSlide = signal(0);
   carouselPaused = signal(false);
 
@@ -56,12 +58,16 @@ export class HomePage implements OnInit {
     forkJoin({
       hero: this.catalog.getHomeHero(),
       divisions: this.catalog.getDivisions(),
+      featured: this.catalog
+        .getProducts({ featured: true })
+        .pipe(catchError(() => of([] as Product[]))),
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ hero, divisions }) => {
+        next: ({ hero, divisions, featured }) => {
           this.hero.set(hero);
           this.divisions.set(divisions);
+          this.featured.set(featured.slice(0, 8));
           this.loading.set(false);
           this.startCarousel();
         },

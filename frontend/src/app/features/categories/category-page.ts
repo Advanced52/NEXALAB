@@ -6,10 +6,11 @@ import { catchError } from 'rxjs/operators';
 import { Category, Product, ServiceItem } from '../../core/models/api.models';
 import { CatalogService } from '../../core/services/catalog.service';
 import { ProductCard } from '../../shared/product-card/product-card';
+import { ServiceCard } from '../../shared/service-card/service-card';
 
 @Component({
   selector: 'app-category-page',
-  imports: [RouterLink, ProductCard],
+  imports: [RouterLink, ProductCard, ServiceCard],
   templateUrl: './category-page.html',
   styleUrl: './category-page.scss',
 })

@@ -21,8 +21,8 @@ import { ProductDetailPage } from '../products/product-detail';
     } @else if (mode() === 'product') {
       <app-product-detail />
     } @else if (mode() === 'service' && service()) {
-      <section class="service">
-        <nav class="crumbs">
+      <section class="service nx-container" [style.--accent]="service()!.division?.primaryColor || null">
+        <nav class="nx-crumbs" aria-label="Ruta">
           <a routerLink="/">NEXALAB</a>
           <span>/</span>
           @if (service()!.division) {
@@ -32,13 +32,17 @@ import { ProductDetailPage } from '../products/product-detail';
           <span>{{ service()!.name }}</span>
         </nav>
         <div class="service__grid">
-          <img [src]="service()!.imageUrl || 'assets/brand/icon.png'" [alt]="service()!.name" />
+          @if (service()!.imageUrl) {
+            <img [src]="service()!.imageUrl" [alt]="service()!.name" />
+          } @else {
+            <div class="service__placeholder" aria-hidden="true"></div>
+          }
           <div>
-            <p class="eyebrow">{{ service()!.division?.name }}</p>
+            <p class="nx-eyebrow">Servicio · {{ service()!.division?.name }}</p>
             <h1>{{ service()!.name }}</h1>
             <p class="desc">{{ service()!.description }}</p>
             <p class="price">
-              @if (service()!.priceType === 'quote') { Solicitar cotización }
+              @if (service()!.priceType === 'quote') { Bajo cotización }
               @else if (service()!.priceType === 'from') {
                 Desde {{ service()!.price | currency: 'USD' : 'symbol-narrow' }}
               } @else {
@@ -49,7 +53,7 @@ import { ProductDetailPage } from '../products/product-detail';
               <p class="meta">Duración aprox.: {{ service()!.durationApprox }}</p>
             }
             @if (service()!.features?.length) {
-              <ul>
+              <ul class="features">
                 @for (f of service()!.features!; track f) {
                   <li>{{ f }}</li>
                 }
@@ -69,20 +73,21 @@ import { ProductDetailPage } from '../products/product-detail';
     }
   `,
   styles: `
-    .service { padding: 1.5rem 1.25rem 3.5rem; }
-    .crumbs { display:flex; flex-wrap:wrap; gap:.4rem; color:var(--nx-muted); font-size:.85rem; margin-bottom:1.5rem; }
-    .crumbs a:hover { color: var(--nx-cyan); }
-    .service__grid { display:grid; gap:1.5rem; }
-    .service__grid img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:14px; border:1px solid var(--nx-border); background:#111; }
-    .eyebrow { margin:0 0 .4rem; color:var(--nx-cyan); text-transform:uppercase; letter-spacing:.08em; font-size:.78rem; }
-    h1 { margin:0 0 .75rem; font-size:clamp(1.6rem,3vw,2.3rem); }
-    .desc { color:var(--nx-muted); line-height:1.55; }
-    .price { font-size:1.35rem; font-weight:700; color:var(--nx-cyan); }
-    .meta { color:var(--nx-muted); }
-    ul { padding-left:1.1rem; color:var(--nx-muted); }
-    @media (min-width:900px) {
-      .service { padding: 2rem 2.5rem 4rem; }
-      .service__grid { grid-template-columns: .9fr 1.1fr; gap:2.5rem; align-items:start; }
+    .service { --accent: var(--nx-cyan); padding-top: 1.5rem; padding-bottom: 4rem; }
+    .service__grid { display: grid; gap: 1.75rem; }
+    .service__grid > img,
+    .service__placeholder { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--nx-radius-lg); border: 1px solid var(--nx-border); background: var(--nx-media-bg); }
+    .service__placeholder { background: radial-gradient(circle at 30% 25%, color-mix(in srgb, var(--accent) 30%, transparent), transparent 65%), linear-gradient(160deg, var(--nx-surface-2), var(--nx-media-bg)); }
+    h1 { margin: 0 0 .75rem; font-size: clamp(1.6rem, 4vw, 2.4rem); line-height: 1.15; letter-spacing: -.02em; }
+    .desc { color: var(--nx-muted); line-height: 1.6; }
+    .price { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin: 1.25rem 0 .35rem; }
+    .meta { color: var(--nx-muted); margin: 0 0 1.25rem; }
+    .features { list-style: none; padding: 0; margin: 0 0 1.5rem; display: grid; gap: .55rem; }
+    .features li { position: relative; padding-left: 1.6rem; color: var(--nx-white); line-height: 1.45; }
+    .features li::before { content: ''; position: absolute; left: 0; top: .2rem; width: 1rem; height: 1rem; border-radius: 50%; background: color-mix(in srgb, var(--accent) 22%, transparent); box-shadow: inset 0 0 0 1px var(--accent); }
+    @media (min-width: 960px) {
+      .service { padding-top: 2rem; }
+      .service__grid { grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
     }
   `,
 })

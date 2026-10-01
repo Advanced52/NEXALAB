@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
 import { Category, Division, Product } from '../../core/models/api.models';
@@ -9,9 +9,12 @@ import { ProductCard } from '../../shared/product-card/product-card';
 
 @Component({
   selector: 'app-shop-page',
-  imports: [RouterLink, FormsModule, ProductCard],
+  imports: [FormsModule, ProductCard],
   templateUrl: './shop-page.html',
   styleUrl: './shop-page.scss',
+  host: {
+    '(document:keydown.escape)': 'filtersOpen.set(false)',
+  },
 })
 export class ShopPage implements OnInit {
   private readonly catalog = inject(CatalogService);
@@ -73,11 +76,30 @@ export class ShopPage implements OnInit {
     return this.categories().filter((c) => c.divisionId === division.id);
   }
 
+  activeFilterCount() {
+    const f = this.filters;
+    return [
+      f.divisionSlug,
+      f.categorySlug,
+      f.type,
+      f.minPrice != null,
+      f.maxPrice != null,
+      f.inStock,
+    ].filter(Boolean).length;
+  }
+
+  selectDivision(slug: string) {
+    this.filters.divisionSlug = slug;
+    this.filters.categorySlug = '';
+    this.applyFilters();
+  }
+
   onDivisionChange() {
     this.filters.categorySlug = '';
   }
 
   applyFilters() {
+    this.filtersOpen.set(false);
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
@@ -103,6 +125,7 @@ export class ShopPage implements OnInit {
       type: '',
       search: '',
     };
+    this.filtersOpen.set(false);
     void this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {},

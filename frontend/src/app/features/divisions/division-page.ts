@@ -1,14 +1,15 @@
-import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
 import { Division } from '../../core/models/api.models';
 import { CatalogService } from '../../core/services/catalog.service';
 import { Title, Meta } from '@angular/platform-browser';
+import { ProductCard } from '../../shared/product-card/product-card';
+import { ServiceCard } from '../../shared/service-card/service-card';
 
 @Component({
   selector: 'app-division-page',
-  imports: [RouterLink, CurrencyPipe],
+  imports: [RouterLink, ProductCard, ServiceCard],
   templateUrl: './division-page.html',
   styleUrl: './division-page.scss',
 })

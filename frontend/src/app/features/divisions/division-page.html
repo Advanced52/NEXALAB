@@ -1,5 +1,5 @@
 @if (loading()) {
-  <div class="nx-empty">Cargando división…</div>
+  <div class="division-skeleton nx-skeleton" aria-label="Cargando división"></div>
 } @else if (error() || !division()) {
   <div class="nx-empty">
     <p>{{ error() || 'División no encontrada.' }}</p>
@@ -8,17 +8,21 @@
 } @else {
   <section
     class="division-hero"
-    [style.--accent]="division()!.primaryColor || '#34b3f1'"
+    [style.--accent]="division()!.primaryColor || 'var(--nx-cyan)'"
   >
-    <div class="division-hero__media">
+    <div class="division-hero__media" aria-hidden="true">
       <img
         class="division-hero__banner"
         [src]="division()!.bannerUrl || 'assets/brand/icon.png'"
-        [alt]="division()!.name"
+        alt=""
       />
     </div>
-    <div class="division-hero__content">
-      <p class="division-hero__parent">Parte de <a routerLink="/">NEXALAB</a></p>
+    <div class="division-hero__content nx-container">
+      <nav class="nx-crumbs division-hero__crumbs" aria-label="Ruta">
+        <a routerLink="/">NEXALAB</a>
+        <span>/</span>
+        <span>{{ division()!.name }}</span>
+      </nav>
       <div class="division-hero__identity">
         @if (division()!.logoUrl) {
           <img [src]="division()!.logoUrl!" [alt]="division()!.name" />
@@ -34,70 +38,51 @@
     </div>
   </section>
 
-  @if (division()!.categories?.length) {
-    <section class="block">
-      <h2>Categorías</h2>
-      <div class="chips">
+  <div class="nx-container division-body">
+    @if (division()!.categories?.length) {
+      <nav class="chips" aria-label="Categorías">
         @for (cat of division()!.categories!; track cat.id) {
           <a class="chip" [routerLink]="['/', division()!.slug, cat.slug]">{{ cat.name }}</a>
         }
-      </div>
-    </section>
-  }
+      </nav>
+    }
 
-  @if (division()!.products?.length) {
-    <section class="block">
-      <h2>Productos</h2>
-      <div class="cards">
-        @for (product of division()!.products!; track product.id) {
-          <a
-            class="item-card"
-            [routerLink]="['/', division()!.slug, product.category?.slug || 'producto', product.slug]"
-          >
-            <img
-              [src]="product.images?.[0]?.url || 'assets/brand/icon.png'"
-              [alt]="product.name"
-            />
-            <div>
-              <h3>{{ product.name }}</h3>
-              <p>{{ product.shortDescription }}</p>
-              <strong>{{ product.price | currency: 'USD' : 'symbol-narrow' }}</strong>
-            </div>
-          </a>
-        }
-      </div>
-    </section>
-  }
+    @if (division()!.services?.length) {
+      <section class="block">
+        <header class="block__head">
+          <div>
+            <p class="nx-eyebrow">Lo que hacemos</p>
+            <h2>Servicios</h2>
+          </div>
+          <span class="block__count">{{ division()!.services!.length }}</span>
+        </header>
+        <div class="services-grid">
+          @for (service of division()!.services!; track service.id) {
+            <app-service-card [service]="service" [division]="division()" />
+          }
+        </div>
+      </section>
+    }
 
-  @if (division()!.services?.length) {
-    <section class="block">
-      <h2>Servicios</h2>
-      <div class="cards">
-        @for (service of division()!.services!; track service.id) {
-          <a
-            class="item-card"
-            [routerLink]="['/', division()!.slug, service.category?.slug || 'servicio', service.slug]"
-          >
-            <img
-              [src]="service.imageUrl || 'assets/brand/icon.png'"
-              [alt]="service.name"
-            />
-            <div>
-              <h3>{{ service.name }}</h3>
-              <p>{{ service.description }}</p>
-              <strong>
-                @if (service.priceType === 'quote') { Solicitar cotización }
-                @else if (service.priceType === 'from') { Desde {{ service.price | currency: 'USD' : 'symbol-narrow' }} }
-                @else { {{ service.price | currency: 'USD' : 'symbol-narrow' }} }
-              </strong>
-            </div>
-          </a>
-        }
-      </div>
-    </section>
-  }
+    @if (division()!.products?.length) {
+      <section class="block">
+        <header class="block__head">
+          <div>
+            <p class="nx-eyebrow">Tienda</p>
+            <h2>Productos</h2>
+          </div>
+          <a class="block__link" routerLink="/tienda" [queryParams]="{ division: division()!.slug }">Ver todo en la tienda →</a>
+        </header>
+        <div class="nx-catalog-grid">
+          @for (product of division()!.products!; track product.id) {
+            <app-product-card [product]="product" [division]="division()" />
+          }
+        </div>
+      </section>
+    }
 
-  @if (!division()!.products?.length && !division()!.services?.length) {
-    <div class="nx-empty">Esta división aún no tiene productos o servicios publicados.</div>
-  }
+    @if (!division()!.products?.length && !division()!.services?.length) {
+      <div class="nx-empty">Esta división aún no tiene productos o servicios publicados.</div>
+    }
+  </div>
 }

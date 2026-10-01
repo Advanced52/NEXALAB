@@ -1,27 +1,94 @@
-<section class="shop">
+<section class="shop nx-container">
   <header class="shop__head">
     <div>
+      <p class="nx-eyebrow">Catálogo</p>
       <h1>Tienda NEXALAB</h1>
-      <p>Productos de todas las divisiones en un solo catálogo.</p>
+      <p class="shop__sub">Productos de todas las divisiones en un solo lugar.</p>
     </div>
-    <div class="shop__head-actions">
-      <button class="nx-btn nx-btn-ghost shop__filter-toggle" type="button" (click)="filtersOpen.set(!filtersOpen())">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
-          <path d="M2 4h12M4 8h8M6 12h4"/>
-        </svg>
-        Filtros
-      </button>
-      <a class="nx-btn nx-btn-ghost" routerLink="/">Volver al inicio</a>
-    </div>
+
+    <form class="shop__search" role="search" (ngSubmit)="applyFilters()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" />
+      </svg>
+      <input
+        class="nx-input"
+        type="search"
+        name="q"
+        [(ngModel)]="filters.search"
+        placeholder="Buscar productos…"
+        aria-label="Buscar productos"
+      />
+    </form>
   </header>
 
+  <nav class="shop__divisions" aria-label="Filtrar por división">
+    <button
+      type="button"
+      class="pill"
+      [class.pill--active]="!filters.divisionSlug"
+      (click)="selectDivision('')"
+    >
+      Todas
+    </button>
+    @for (d of divisions(); track d.id) {
+      <button
+        type="button"
+        class="pill"
+        [class.pill--active]="filters.divisionSlug === d.slug"
+        [style.--accent]="d.primaryColor || null"
+        (click)="selectDivision(d.slug)"
+      >
+        <i aria-hidden="true"></i>{{ d.name }}
+      </button>
+    }
+  </nav>
+
+  <div class="shop__toolbar">
+    <p class="shop__count" aria-live="polite">
+      @if (!loading()) {
+        {{ products().length }} {{ products().length === 1 ? 'producto' : 'productos' }}
+      }
+    </p>
+    <button
+      class="nx-btn nx-btn-ghost shop__filter-toggle"
+      type="button"
+      (click)="filtersOpen.set(true)"
+      [attr.aria-expanded]="filtersOpen()"
+      aria-controls="shop-filters"
+    >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+        <path d="M2 4h12M4 8h8M6 12h4" />
+      </svg>
+      Filtros
+      @if (activeFilterCount()) {
+        <span class="shop__filter-badge">{{ activeFilterCount() }}</span>
+      }
+    </button>
+  </div>
+
   <div class="shop__layout">
-    <aside class="shop__filters nx-card" [class.shop__filters--open]="filtersOpen()">
-      <h2>Filtros</h2>
+    <aside
+      id="shop-filters"
+      class="shop__filters"
+      [class.shop__filters--open]="filtersOpen()"
+      aria-label="Filtros"
+    >
+      <div class="shop__filters-head">
+        <h2>Filtros</h2>
+        <button class="shop__filters-close" type="button" (click)="filtersOpen.set(false)" aria-label="Cerrar filtros">
+          <svg width="18" height="18" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <line x1="4" y1="4" x2="18" y2="18" />
+            <line x1="18" y1="4" x2="4" y2="18" />
+          </svg>
+        </button>
+      </div>
+
       <form (ngSubmit)="applyFilters()">
         <div class="nx-field">
-          <label class="nx-label">División</label>
+          <label class="nx-label" for="f-division">División</label>
           <select
+            id="f-division"
             class="nx-select"
             name="divisionSlug"
             [(ngModel)]="filters.divisionSlug"
@@ -35,8 +102,8 @@
         </div>
 
         <div class="nx-field">
-          <label class="nx-label">Categoría</label>
-          <select class="nx-select" name="categorySlug" [(ngModel)]="filters.categorySlug">
+          <label class="nx-label" for="f-category">Categoría</label>
+          <select id="f-category" class="nx-select" name="categorySlug" [(ngModel)]="filters.categorySlug">
             <option value="">Todas</option>
             @for (c of filteredCategories(); track c.id) {
               <option [value]="c.slug">{{ c.name }}</option>
@@ -45,73 +112,73 @@
         </div>
 
         <div class="nx-field">
-          <label class="nx-label">Tipo</label>
-          <select class="nx-select" name="type" [(ngModel)]="filters.type">
+          <label class="nx-label" for="f-type">Tipo</label>
+          <select id="f-type" class="nx-select" name="type" [(ngModel)]="filters.type">
             <option value="">Todos</option>
             <option value="physical">Físico</option>
             <option value="digital">Digital</option>
           </select>
         </div>
 
-        <div class="price-row">
-          <div class="nx-field">
-            <label class="nx-label">Precio min</label>
-            <input
-              class="nx-input"
-              type="number"
-              min="0"
-              step="0.01"
-              name="minPrice"
-              [(ngModel)]="filters.minPrice"
-            />
-          </div>
-          <div class="nx-field">
-            <label class="nx-label">Precio max</label>
-            <input
-              class="nx-input"
-              type="number"
-              min="0"
-              step="0.01"
-              name="maxPrice"
-              [(ngModel)]="filters.maxPrice"
-            />
-          </div>
-        </div>
-
-        <div class="nx-field">
-          <label class="nx-label">Buscar</label>
+        <fieldset class="price-row">
+          <legend class="nx-label">Precio (USD)</legend>
           <input
             class="nx-input"
-            name="search"
-            [(ngModel)]="filters.search"
-            placeholder="Nombre o descripción"
+            type="number"
+            min="0"
+            step="0.01"
+            name="minPrice"
+            placeholder="Mín."
+            aria-label="Precio mínimo"
+            [(ngModel)]="filters.minPrice"
           />
-        </div>
+          <span aria-hidden="true">–</span>
+          <input
+            class="nx-input"
+            type="number"
+            min="0"
+            step="0.01"
+            name="maxPrice"
+            placeholder="Máx."
+            aria-label="Precio máximo"
+            [(ngModel)]="filters.maxPrice"
+          />
+        </fieldset>
 
         <label class="stock">
           <input type="checkbox" name="inStock" [(ngModel)]="filters.inStock" />
           Solo disponibles
         </label>
 
-        <div class="nx-actions">
+        <div class="shop__filters-actions">
           <button class="nx-btn nx-btn-primary" type="submit">Aplicar</button>
           <button class="nx-btn nx-btn-ghost" type="button" (click)="clearFilters()">Limpiar</button>
         </div>
       </form>
     </aside>
 
+    @if (filtersOpen()) {
+      <div class="shop__scrim" (click)="filtersOpen.set(false)"></div>
+    }
+
     <div class="shop__results">
       @if (loading()) {
-        <div class="shop__grid">
+        <div class="nx-catalog-grid">
           @for (_ of [1, 2, 3, 4, 5, 6]; track $index) {
-            <div class="skeleton"></div>
+            <div class="nx-skeleton loading-tile"></div>
           }
         </div>
       } @else if (!products().length) {
-        <div class="nx-empty">No hay productos con estos filtros.</div>
+        <div class="shop__empty">
+          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.5-3.5M8.5 11h5" />
+          </svg>
+          <p>No encontramos productos con estos filtros.</p>
+          <button class="nx-btn nx-btn-ghost" type="button" (click)="clearFilters()">Limpiar filtros</button>
+        </div>
       } @else {
-        <p class="shop__count">{{ products().length }} producto(s)</p>
-        <div class="shop__grid">
+        <div class="nx-catalog-grid">
           @for (product of products(); track product.id) {
             <app-product-card [product]="product" />
           }

@@ -6,8 +6,8 @@
     <a class="nx-btn nx-btn-primary" routerLink="/tienda">Ir a la tienda</a>
   </div>
 } @else {
-  <section class="detail">
-    <nav class="crumbs">
+  <section class="detail nx-container" [style.--accent]="product()!.division?.primaryColor || null">
+    <nav class="nx-crumbs" aria-label="Ruta">
       <a routerLink="/">NEXALAB</a>
       <span>/</span>
       @if (product()!.division) {
@@ -29,7 +29,13 @@
         @if (product()!.images?.length) {
           <div class="gallery__thumbs">
             @for (image of product()!.images!; track image.id) {
-              <button type="button" (click)="selectImage(image.url)">
+              <button
+                type="button"
+                [class.active]="selectedImage() === image.url"
+                [attr.aria-label]="'Ver imagen de ' + product()!.name"
+                [attr.aria-pressed]="selectedImage() === image.url"
+                (click)="selectImage(image.url)"
+              >
                 <img [src]="image.url" [alt]="image.alt || product()!.name" />
               </button>
             }
@@ -38,7 +44,7 @@
       </div>
 
       <div class="info">
-        <p class="info__division">{{ product()!.division?.name }}</p>
+        <p class="nx-eyebrow">{{ product()!.division?.name }}</p>
         <h1>{{ product()!.name }}</h1>
         @if (product()!.shortDescription) {
           <p class="info__short">{{ product()!.shortDescription }}</p>
@@ -51,13 +57,15 @@
           }
         </div>
 
-        @if (product()!.sku) {
-          <p class="meta">SKU: {{ selectedVariant()?.sku || product()!.sku }}</p>
-        }
-
-        <p class="meta" [class.out]="availableStock() <= 0">
-          Stock: {{ availableStock() > 0 ? availableStock() : 'Agotado' }}
-        </p>
+        <div class="meta-row">
+          <span class="stock-pill" [class.out]="availableStock() <= 0">
+            <i aria-hidden="true"></i>
+            {{ availableStock() > 0 ? availableStock() + ' disponibles' : 'Agotado' }}
+          </span>
+          @if (product()!.sku) {
+            <span class="meta">SKU: {{ selectedVariant()?.sku || product()!.sku }}</span>
+          }
+        </div>
 
         @if (activeVariants().length) {
           <div class="variants">
@@ -82,19 +90,20 @@
         }
 
         <div class="buy">
-          <div class="nx-field qty">
-            <label class="nx-label">Cantidad</label>
+          <div class="stepper" role="group" aria-label="Cantidad">
+            <button type="button" (click)="stepQuantity(-1)" [disabled]="quantity <= 1" aria-label="Restar uno">−</button>
             <input
-              class="nx-input"
               type="number"
               min="1"
               [max]="availableStock() || 1"
               name="quantity"
+              aria-label="Cantidad"
               [(ngModel)]="quantity"
             />
+            <button type="button" (click)="stepQuantity(1)" [disabled]="quantity >= (availableStock() || 1)" aria-label="Sumar uno">+</button>
           </div>
           <button
-            class="nx-btn nx-btn-primary"
+            class="nx-btn nx-btn-primary buy__cta"
             type="button"
             [disabled]="availableStock() <= 0"
             (click)="addToCart()"
