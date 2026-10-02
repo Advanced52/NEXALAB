@@ -1,3 +1,4 @@
+import { CurrencyPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Category, Division, Product } from '../../../core/models/api.models';
@@ -7,7 +8,7 @@ import { ImageUpload } from '../../../shared/image-upload/image-upload';
 
 @Component({
   selector: 'app-admin-products',
-  imports: [FormsModule, ImageUpload],
+  imports: [FormsModule, ImageUpload, CurrencyPipe],
   templateUrl: './admin-products.html',
   styleUrl: './admin-products.scss',
 })

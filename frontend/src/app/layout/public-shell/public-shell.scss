@@ -114,7 +114,7 @@
 .toasts {
   position: fixed;
   right: 1rem;
-  bottom: 1rem;
+  bottom: 5rem;
   display: grid;
   gap: 0.5rem;
   z-index: 100;
@@ -130,18 +130,6 @@
   display: grid;
   gap: 1rem;
   background: var(--nx-footer-bg);
-}
-
-.public__footer-top {
-  display: flex;
-  flex-direction: column;
-  gap: 1.15rem;
-  align-items: flex-start;
-}
-
-.public__footer-logo img {
-  width: min(200px, 70vw);
-  display: block;
 }
 
 .public__footer-links {
@@ -183,6 +171,27 @@
   margin: 0;
   color: var(--nx-copy-color);
   font-size: 0.82rem;
+}
+
+.public__whatsapp {
+  position: fixed;
+  right: 1.15rem;
+  bottom: 1.15rem;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  background: #25d366;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.public__whatsapp:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.35);
 }
 
 .public__drawer {
@@ -330,15 +339,8 @@
     padding-bottom: 2rem;
   }
 
-  .public__footer-top {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2.5rem;
-  }
-
   .public__footer-links {
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
 
   .public__copy {

@@ -66,7 +66,7 @@
         <label><input type="checkbox" name="isActive" [(ngModel)]="form.isActive" /> Activo</label>
         <label><input type="checkbox" name="isFeatured" [(ngModel)]="form.isFeatured" /> Destacado</label>
       </div>
-      <div class="nx-actions" style="margin-top: 1rem">
+      <div class="nx-actions form-actions">
         <button class="nx-btn nx-btn-primary" type="submit">Guardar</button>
         <button class="nx-btn nx-btn-ghost" type="button" (click)="showForm.set(false)">Cancelar</button>
       </div>
@@ -98,7 +98,7 @@
                 <div class="muted">{{ item.sku || item.slug }}</div>
               </td>
               <td>{{ item.division?.name || '—' }}</td>
-              <td>${{ item.price }}</td>
+              <td>{{ item.price | currency: 'USD' : 'symbol-narrow' }}</td>
               <td>{{ item.stock }}</td>
               <td>
                 <span class="nx-badge" [class.nx-badge-ok]="item.isActive" [class.nx-badge-off]="!item.isActive">
