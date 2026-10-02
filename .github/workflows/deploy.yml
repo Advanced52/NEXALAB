@@ -1,9 +1,12 @@
-# Auto-deploy: push a main → GitHub Actions → webhook Portainer
+# Auto-deploy: push → GitHub Actions → webhook Portainer
 #
-# Setup:
-# 1. Portainer → Stacks → nexalab → Webhooks → copia URL
-# 2. GitHub → Settings → Secrets and variables → Actions
-#    → New secret: PORTAINER_WEBHOOK_URL = esa URL
+# Secrets (GitHub → Settings → Secrets → Actions):
+#   PORTAINER_WEBHOOK_URL   (obligatorio) URL del webhook del stack
+#
+# Si Portainer está detrás de Cloudflare Access, además:
+#   CF_ACCESS_CLIENT_ID
+#   CF_ACCESS_CLIENT_SECRET
+#   (Zero Trust → Access → Service Auth → Create Service Token)
 
 name: Deploy NEXALAB
 
@@ -19,24 +22,43 @@ jobs:
       - name: Trigger Portainer webhook
         env:
           WEBHOOK_URL: ${{ secrets.PORTAINER_WEBHOOK_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
           if [ -z "$WEBHOOK_URL" ]; then
-            echo "::error::Falta el secret PORTAINER_WEBHOOK_URL"
-            echo "GitHub → Settings → Secrets → Actions → New repository secret"
-            echo "Name: PORTAINER_WEBHOOK_URL"
-            echo "Value: la URL del webhook del stack nexalab en Portainer"
+            echo "::error::Falta PORTAINER_WEBHOOK_URL"
             exit 1
           fi
 
           echo "Avisando a Portainer..."
-          HTTP_CODE=$(curl -sS -o /tmp/portainer_response.txt -w "%{http_code}" -X POST "$WEBHOOK_URL")
+          CURL_ARGS=(-sS -o /tmp/portainer_response.txt -w "%{http_code}" -X POST)
+
+          if [ -n "$CF_ACCESS_CLIENT_ID" ] && [ -n "$CF_ACCESS_CLIENT_SECRET" ]; then
+            echo "Usando Cloudflare Access service token"
+            CURL_ARGS+=(
+              -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID"
+              -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET"
+            )
+          fi
+
+          HTTP_CODE=$(curl "${CURL_ARGS[@]}" "$WEBHOOK_URL")
           echo "HTTP $HTTP_CODE"
-          cat /tmp/portainer_response.txt || true
+          echo "Respuesta:"
+          head -c 500 /tmp/portainer_response.txt || true
           echo
+
+          if [ "$HTTP_CODE" = "401" ] || [ "$HTTP_CODE" = "403" ]; then
+            echo "::error::Unauthorized — Cloudflare o Portainer bloqueó la petición."
+            echo "Opciones:"
+            echo "1) Cloudflare Zero Trust → bypass/policy para la ruta del webhook"
+            echo "2) Crear Service Token y secrets CF_ACCESS_CLIENT_ID / CF_ACCESS_CLIENT_SECRET"
+            echo "3) Usar URL interna con un runner self-hosted en tu CPU"
+            exit 1
+          fi
 
           if [ "$HTTP_CODE" -lt 200 ] || [ "$HTTP_CODE" -ge 300 ]; then
             echo "::error::Portainer respondió $HTTP_CODE"
             exit 1
           fi
 
-          echo "OK — Portainer actualizará el stack (git pull + rebuild)."
+          echo "OK — Portainer actualizará el stack."
